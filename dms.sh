@@ -136,9 +136,7 @@ function install_vim() {
 # Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
-	mv /root/.symfony*/ /$username/.symfony/	
-	chown -R $username:$username /$username/.symfony/	 	
-	mv /$username/.symfony/bin/symfony /usr/local/bin/symfony
+	mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
     say_done
 }
 
