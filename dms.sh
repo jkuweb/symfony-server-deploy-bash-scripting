@@ -40,6 +40,13 @@ function set_hour() {
     say_done
 }
 
+
+function sysupdate() {
+    write_title "3. Actualización del sistema"
+    apt update && apt upgrade -y
+    say_done
+}
+
 #  4. Crear un nuevo usuario con privilegios
 function set_new_user() {
     write_title "4. Creación de un nuevo usuario"
@@ -139,7 +146,7 @@ function install_php() {
 	curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
 	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
 	apt-get update
-	apt install php8.1 libapache2-mod-php8.1 php8.1-mysql
+	apt install -y php8.1 libapache2-mod-php8.1 php8.1-mysql
     
     a2enmod rewrite
     a2enmod php8.1
@@ -172,6 +179,7 @@ function install_common_libraries() {
 	echo "13.11. Instalar Libicu-dev......................."; apt install libicu-dev -y
 	echo "13.12. Instalar Intl ......................."; apt install php8.1-intl -y
 	echo "13.13. Instalar Opcache ......................."; apt install php8.1-opcache -y
+    say_done
 }
 
 
@@ -180,13 +188,31 @@ function install_composer() {
 	write_title "13. Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 	composer self-update	
+    say_done
 		
+}
+
+
+# 15. Instalar y tunear VIM
+function install_vim() {
+	apt install vim -y 
+	git clone https://github.com/jkuweb/my-vim.git	
+	chown -R appuser:appuser my-vim 
+	mv /my-vim /home/appuser/
+	mv /home/appuser/my-vim/.v* /home/appuser/
+	chmod 664 /home/appuser/.vimrc
+	cd /home/appuser
+	 git clone https://github.com/VundleVim/Vundle.vim.git /home/appuser/.vim/bundle/Vundle.vim  
+	chown -R appuser:appuser /home/appuser/.vim 
+	rm -rf /home/appuser/my-vim 
+    say_done
 }
 
 set_pause_on                    #  Configurar modo de pausa entre funciones
 is_root_user                    #  0. Verificar si es usuario root o no
 set_hostname                    #  1. Configurar Hostname
 set_hour                        #  2. Configurar zona horaria
+sysupdate
 set_new_user                    #  4. Crear un nuevo usuario con privilegios
 give_instructions               #  5. Instrucciones para generar una RSA Key
 move_rsa                        #  6. Mover la llave pública RSA generada
@@ -198,3 +224,4 @@ tunning_bashrc                  # 11. Tunnear el archivo .bashrc
 install_php                     # 12. Instalar php
 install_common_libraries        # 13. Instalar extensiones php y librerías 
 install_composer 
+install_vim
