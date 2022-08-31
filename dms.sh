@@ -36,7 +36,7 @@ function set_hostname() {
 # 2. Configurar zona horaria
 function set_hour() {
     write_title "2. Configuración de la zona horaria"
-    dpkg-reconfigure tzdata
+   # dpkg-reconfigure tzdata
     say_done
 }
 
@@ -170,3 +170,4 @@ install_php                     #  6. Instalar php
 install_common_libraries        #  7. Instalar extensiones php y librerías 
 install_composer 
 install_vim
+install_symfony_binary
