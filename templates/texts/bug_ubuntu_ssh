@@ -1,0 +1,35 @@
+
+    ***** SOLUCIÓN DE PROBLEMAS COMUNES *****
+    
+    ERROR: "Agent admitted failure to sign using the key"
+
+    Solución:
+        En local, ejecute el siguiente comando e intente conectar nuevamente:
+        echo "export SSH_AUTH_SOCK=0" >> ~/.bashrc && source ~/.bashrc
+    
+    ----------------------------------------------------------------------------
+    
+    ERROR: 
+        (con adduser en DigitalOcean)
+    
+    Solución:
+        you must purge the unscd package and then, remove the debian user by 
+        using the following commands as root:
+    
+        apt remove --purge unscd
+        userdel -r debian 
+        apt install man
+
+    ----------------------------------------------------------------------------
+    
+    ERROR:
+        (con Locale en Vultr)
+        apt-listchanges: Can't set locale; (...)
+        locale: Cannot set <VAR> to default locale: No such file or directory
+    
+    Solución:
+        run the folowing command:
+    
+        echo 'LANG="en_US.UTF-8"' >> /etc/default/locale
+    
+    ----------------------------------------------------------------------------

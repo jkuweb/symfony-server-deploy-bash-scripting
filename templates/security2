@@ -1,0 +1,10 @@
+<IfModule security2_module>
+	SecDataDir /var/cache/modsecurity
+    IncludeOptional /etc/modsecurity/*.conf
+	
+	Include /etc/apache2/modsecurity.d/crs-setup.conf
+    IncludeOptional /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+    Include /etc/apache2/modsecurity.d/rules/*.conf
+    IncludeOptional /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+</IfModule>
+
