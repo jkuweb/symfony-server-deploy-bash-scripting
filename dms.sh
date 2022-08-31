@@ -56,79 +56,7 @@ function set_new_user() {
 }
 
 
-#  5. Instrucciones para generar una RSA Key
-function give_instructions() {
-    write_title "5. Generación de llave RSA en su ordenador local"
-    echo " *** SI NO TIENE UNA LLAVE RSA PÚBLICA EN SU ORDENADOR, GENERE UNA ***"
-    echo "     Siga las instrucciones y pulse INTRO cada vez que termine una"
-    echo "     tarea para recibir una nueva instrucción"
-    echo " "
-    echo "     EJECUTE LOS SIGUIENTES COMANDOS:"
-    echo -n "     a) ssh-keygen "; read foo1
-    echo -n "     b) scp .ssh/id_rsa.pub $username@$serverip:/home/$username/ "; read foo2
-    say_done
-}
-
-
-#  6. Mover la llave pública RSA generada
-function move_rsa() {
-    write_title "6. Se moverá la llave pública RSA generada en el paso 5"
-    mkdir /home/$username/.ssh
-    mv /home/$username/id_rsa.pub /home/$username/.ssh/authorized_keys
-    chmod 700 /home/$username/.ssh
-    chmod 600 /home/$username/.ssh/authorized_keys
-    chown -R $username:$username /home/$username/.ssh
-    say_done
-}
-
-
-#  7. Securizar SSH
-function ssh_reconfigure() {
-    write_title "7. Securizar accesos SSH"
-    
-    if [ "$optional_arg" == "--custom" ]; then
-        echo -n "Puerto SSH (Ej: 372): "; read puerto
-    else
-        puerto="372"
-    fi
-
-    sed s/USERNAME/$username/g templates/sshd_config > /tmp/sshd_config
-    sed s/PUERTO/$puerto/g /tmp/sshd_config > /etc/ssh/sshd_config
-    service ssh restart
-    say_done
-}
-
-
-#  8. Establecer reglas para iptables
-function set_iptables_rules() {
-    write_title "8. Establecer reglas para iptables (firewall)"
-    sed s/PUERTO/$puerto/g templates/iptables > /etc/iptables.firewall.rules
-    iptables-restore < /etc/iptables.firewall.rules
-    say_done
-}
-
-
-#  9. Crear script de automatizacion iptables
-function create_iptable_script() {
-    write_title "9. Crear script de automatización de reglas de iptables tras reinicio"
-    cat templates/firewall > /etc/network/if-pre-up.d/firewall
-    chmod +x /etc/network/if-pre-up.d/firewall
-    say_done
-}
-
-
-# 10. Instalar fail2ban
-function install_fail2ban() {
-    # para eliminar una regla de fail2ban en iptables utilizar:
-    # iptables -D fail2ban-ssh -s IP -j DROP
-    write_title "10. Instalar Sendmail y fail2ban"
-    apt install sendmail-bin sendmail -y
-    apt install fail2ban -y
-    say_done
-}
-
-
-# 11. Tunnear el archivo .bashrc
+# 5. Tunnear el archivo .bashrc
 function tunning_bashrc() {
     write_title "19. Reemplazar .bashrc"
     cp templates/bashrc-root /root/.bashrc
@@ -139,7 +67,7 @@ function tunning_bashrc() {
 }
 
 
-# 12. Instalar, configurar y optimizar PHP
+# 6. Instalar, configurar y optimizar PHP
 function install_php() {
     write_title "12. Instalar PHP 8.1 + Apache 2"
 	apt-get -y install apt-transport-https lsb-release ca-certificates curl
@@ -163,7 +91,7 @@ function install_php() {
     say_done
 }
 
-# 13. Instalar librerías comunes
+# 7. Instalar librerías comunes
 function install_common_libraries() {
 	write_title "13. Instalar librerías para php"
 	echo "13.1.  Instalar Access Control List.............."; apt install acl -y
@@ -183,29 +111,52 @@ function install_common_libraries() {
 }
 
 
-# 14. Instalar composer 
+# 8. Instalar composer 
 function install_composer() {
 	write_title "13. Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 	composer self-update	
     say_done
-		
 }
 
 
-# 15. Instalar y tunear VIM
+# 9. Instalar y tunear VIM
 function install_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
-	chown -R appuser:appuser my-vim 
-	mv /my-vim /home/appuser/
-	mv /home/appuser/my-vim/.v* /home/appuser/
-	chmod 664 /home/appuser/.vimrc
-	cd /home/appuser
-	 git clone https://github.com/VundleVim/Vundle.vim.git /home/appuser/.vim/bundle/Vundle.vim  
-	chown -R appuser:appuser /home/appuser/.vim 
-	rm -rf /home/appuser/my-vim 
+	chown -R $username:$username my-vim 
+	mv /my-vim /home/$username/
+	mv /home/$username/my-vim/.v* /home/$username/
+	chmod 664 /home/$username/.vimrc
+	cd /home/$username
+	 git clone https://github.com/VundleVim/Vundle.vim.git /home/$username/.vim/bundle/Vundle.vim  
+	chown -R $username:$username /home/$username/.vim 
+	rm -rf /home/$username/my-vim 
     say_done
+}
+
+# Install Symfony binary
+function install_symfony_binary() {
+	wget https://get.symfony.com/cli/installer -O - | bash
+	mv /home/$username/.symfony* /home/$username/.symfony
+	mv /home/$username/.symfony/bin/symfony /usr/local/bin/symfony
+    say_done
+}
+
+#  Reiniciar servidor
+function final_step() {
+    write_title "27. Finalizar deploy"
+    replace USERNAME $username SERVERIP $serverip PUERTO $puerto < templates/texts/bye
+    echo -n " ¿Ha podido conectarse por SHH como $username? (y/n) "
+    read respuesta
+    if [ "$respuesta" == "y" ]; then
+        reboot
+    else
+        # instrucciones
+        echo "El servidor NO será reiniciado. Su conexión permanecerá abierta."
+        cat templates/texts/bug_ubuntu_ssh
+        echo "Para reiniciar el servidor escriba reboot y pulse <ENTER>"
+    fi
 }
 
 set_pause_on                    #  Configurar modo de pausa entre funciones
@@ -214,14 +165,8 @@ set_hostname                    #  1. Configurar Hostname
 set_hour                        #  2. Configurar zona horaria
 sysupdate
 set_new_user                    #  4. Crear un nuevo usuario con privilegios
-give_instructions               #  5. Instrucciones para generar una RSA Key
-move_rsa                        #  6. Mover la llave pública RSA generada
-ssh_reconfigure                 #  7. Asegurar SSH
-set_iptables_rules              #  8. Establecer reglas para iptables
-create_iptable_script           #  9. Crear script de automatizacion iptables
-install_fail2ban				# 10. Instalar fail2ban
-tunning_bashrc                  # 11. Tunnear el archivo .bashrc
-install_php                     # 12. Instalar php
-install_common_libraries        # 13. Instalar extensiones php y librerías 
+tunning_bashrc                  #  5. Tunnear el archivo .bashrc
+install_php                     #  6. Instalar php
+install_common_libraries        #  7. Instalar extensiones php y librerías 
 install_composer 
 install_vim
