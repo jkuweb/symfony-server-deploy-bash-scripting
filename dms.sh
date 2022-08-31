@@ -140,6 +140,13 @@ function install_symfony_binary() {
     say_done
 }
 
+function install_virtualhost() {
+	sed s/DOMAIN_NAME/$domain_name/g templates/apache-symfony > /etc/apache2/sites-available/000-$domain_name.conf
+	rm /etc/apache2/sites-enable/000-default.conf
+	a2ensite 000-$domain_name.conf
+	systemctl restart apache2
+}
+
 #  Reiniciar servidor
 function final_step() {
     write_title "27. Finalizar deploy"
@@ -168,3 +175,4 @@ install_common_libraries        #  7. Instalar extensiones php y librerías
 install_composer 
 install_vim
 install_symfony_binary
+install_virtualhost
