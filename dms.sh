@@ -70,11 +70,11 @@ function tunning_bashrc() {
 # 6. Instalar, configurar y optimizar PHP
 function install_php() {
     write_title "12. Instalar PHP 8.1 + Apache 2"
-	apt-get -y install apt-transport-https lsb-release ca-certificates curl
-	curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
-	sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
-	apt-get update
-	apt install -y php8.1 libapache2-mod-php8.1 php8.1-mysql
+    apt-get -y install apt-transport-https lsb-release ca-certificates curl
+    curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+    sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+    apt-get update
+    apt install -y php8.1 libapache2-mod-php8.1 php8.1-mysql
     
     a2enmod rewrite
     a2enmod php8.1
@@ -124,23 +124,21 @@ function install_composer() {
 function install_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
-	chown -R $username:$username my-vim 
-	mv /my-vim /home/$username/
-	mv /home/$username/my-vim/.v* /home/$username/
-	chmod 664 /home/$username/.vimrc
-	cd /home/$username
-	 git clone https://github.com/VundleVim/Vundle.vim.git /home/$username/.vim/bundle/Vundle.vim  
-	chown -R $username:$username /home/$username/.vim 
-	rm -rf /home/$username/my-vim 
+	chown -R $username:$username my-vim/
+	rm -rf /home/$username/.vim
+	mv -f my-vim/.vim* /home/$username/
+	git clone https://github.com/VundleVim/Vundle.vim.git /home/$username/.vim/bundle/Vundle.vim  
+	
+	rm -rf /root/my-vim 
     say_done
 }
 
 # Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
-	chown -R $username:$username /root/.symfony5 
-	mv /root/.symfony5 /$username/
-	mv /home/$username/.symfony5/bin/symfony /usr/local/bin/symfony
+	chown -R $username:$username .symfony*/
+	chown .symfony*/ .symfony/ 	
+	mv /root/.symfony/bin/symfony /usr/local/bin/symfony
     say_done
 }
 
