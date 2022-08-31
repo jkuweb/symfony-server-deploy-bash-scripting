@@ -145,6 +145,7 @@ function install_virtualhost() {
 	rm /etc/apache2/sites-enable/000-default.conf
 	a2ensite 000-$domain_name.conf
 	systemctl restart apache2
+    say_done
 }
 
 #  Reiniciar servidor
