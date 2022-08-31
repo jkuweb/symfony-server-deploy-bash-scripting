@@ -2,10 +2,10 @@
     ServerName DOMAIN_NAME
     ServerAlias www.DOMAIN_NAME
 
-    DocumentRoot /var/www/DOMAIN_NAME/public
+    DocumentRoot /srv/websites/DOMAIN_NAME/public
     DirectoryIndex /index.php
 
-    <Directory /var/www/DOMAIN_NAME/public>
+    <Directory /srv/websites/DOMAIN_NAME/public>
         AllowOverride None
         Order Allow,Deny
         Allow from All
@@ -15,14 +15,14 @@
 
     # uncomment the following lines if you install assets as symlinks
     # or run into problems when compiling LESS/Sass/CoffeeScript assets
-    # <Directory /var/www/DOMAIN_NAME>
+    # <Directory /srv/websites/DOMAIN_NAME>
     #     Options FollowSymlinks
     # </Directory>
 
     # optionally disable the fallback resource for the asset directories
     # which will allow Apache to return a 404 error when files are
     # not found instead of passing the request to Symfony
-    <Directory /var/www/DOMAIN_NAME/public/bundles>
+    <Directory /srv/websites/DOMAIN_NAME/public/bundles>
         DirectoryIndex disabled
         FallbackResource disabled
     </Directory>
