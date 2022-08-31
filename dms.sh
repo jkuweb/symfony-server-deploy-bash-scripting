@@ -100,7 +100,7 @@ function install_common_libraries() {
 	echo "13.4.  Instalar Openssh-client..................."; apt install openssh-client -y
 	echo "13.5.  Instalar Wget............................."; apt install wget -y
 	echo "13.6.  Instalar Zip.............................."; apt install zip -y
-	echo "13.7.  Instalar Libpng-dev......................."; apt install libpeng-dev -y
+	echo "13.7.  Instalar Libpng-dev......................."; apt install libpng-dev -y
 	echo "13.8.  Instalar Zlib1g-dev......................."; apt install zlib1g-dev -y
 	echo "13.9.  Instalar Libzip-dev......................."; apt install libzip-dev -y
 	echo "13.10. Instalar Libxml2-dev......................."; apt install libxml2-dev -y
