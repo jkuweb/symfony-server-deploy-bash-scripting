@@ -36,7 +36,7 @@ function set_hostname() {
 # 2. Configurar zona horaria
 function set_hour() {
     write_title "2. Configuración de la zona horaria"
-   # dpkg-reconfigure tzdata
+    dpkg-reconfigure tzdata
     say_done
 }
 
@@ -138,8 +138,9 @@ function install_vim() {
 # Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
-	mv /home/$username/.symfony* /home/$username/.symfony
-	mv /home/$username/.symfony/bin/symfony /usr/local/bin/symfony
+	chown -R $username:$username /root/.symfony5 
+	mv /root/.symfony5 /$username/
+	mv /home/$username/.symfony5/bin/symfony /usr/local/bin/symfony
     say_done
 }
 
