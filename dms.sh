@@ -110,8 +110,80 @@ function install_common_libraries() {
     say_done
 }
 
+# 8. Instalar OWASP para ModSecuity
+function install_owasp_core_rule_set() {
+    write_title "14. Instalar OWASP ModSecurity Core Rule Set"
+    
+    write_title "14.2 Clonar repositorio"
+    mkdir /etc/apache2/modsecurity.d
+    git clone https://github.com/SpiderLabs/owasp-modsecurity-crs /etc/apache2/modsecurity.d
+    
+    write_title "14.3 Mover archivo de configuración"
+    mv /etc/apache2/modsecurity.d/crs-setup.conf.example /etc/apache2/modsecurity.d/crs-setup.conf
+    
+    write_title "14.4 Renombrar reglas de pre y post ejecución"
+    mv /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
+        /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+    mv /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
+        /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    
+    write_title "14.4 Reemplazar configuración del módulo"
+    cp templates/security2 /etc/apache2/mods-available/security2.conf 
+    
 
-# 8. Instalar composer 
+    modsecrec="/etc/modsecurity/modsecurity.conf"
+    sed s/SecRuleEngine\ DetectionOnly/SecRuleEngine\ On/g $modsecrec > /tmp/salida
+    mv /tmp/salida /etc/modsecurity/modsecurity.conf
+    
+    if [ "$optional_arg" == "--custom" ]; then
+        echo -n "Firma servidor: "; read firmaserver
+        echo -n "Powered: "; read poweredby
+    else
+        firmaserver="Oracle Solaris 11.2"
+        poweredby="n/a"
+    fi
+    
+    modseccrs10su="/etc/apache2/modsecurity.d/crs-setup.conf"
+    echo "SecServerSignature \"$firmaserver\"" >> $modseccrs10su
+    echo "Header set X-Powered-By \"$poweredby\"" >> $modseccrs10su
+
+    a2enmod headers
+    service apache2 restart
+    say_done
+}
+
+
+# 9. Configurar y optimizar Apache
+function configure_apache() {
+    write_title "15. Finalizar configuración y optimización de Apache"
+    cp templates/apache /etc/apache2/apache2.conf
+    service apache2 restart
+    say_done
+}
+
+
+
+# 10. Instalar ModEvasive
+function install_modevasive() {
+    write_title "16. Instalar ModEvasive"
+    echo -n " Indique e-mail para recibir alertas: "; read inbox
+    
+    if [ "$inbox" == "" ]; then
+        inbox="root@localhost"
+    fi
+    
+    apt install libapache2-mod-evasive -y
+    mkdir /var/log/mod_evasive
+    chown www-data:www-data /var/log/mod_evasive/
+    modevasive="/etc/apache2/mods-available/mod-evasive.conf"
+    sed s/MAILTO/$inbox/g templates/mod-evasive > $modevasive
+    a2enmod evasive
+    service apache2 restart
+    say_done
+}
+
+
+# 11. Instalar composer 
 function install_composer() {
 	write_title "13. Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
@@ -142,7 +214,7 @@ function install_symfony_binary() {
 
 function install_virtualhost() {
 	sed s/DOMAIN_NAME/$domain_name/g templates/apache-symfony > /etc/apache2/sites-available/000-$domain_name.conf
-	rm /etc/apache2/sites-enable/000-default.conf
+	rm /etc/apache2/sites-enabled/000-default.conf
 	a2ensite 000-$domain_name.conf
 	systemctl restart apache2
     say_done
@@ -173,6 +245,9 @@ set_new_user                    #  4. Crear un nuevo usuario con privilegios
 tunning_bashrc                  #  5. Tunnear el archivo .bashrc
 install_php                     #  6. Instalar php
 install_common_libraries        #  7. Instalar extensiones php y librerías 
+install_owasp_core_rule_set
+configure_apache
+install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
