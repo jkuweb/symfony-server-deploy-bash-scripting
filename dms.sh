@@ -110,6 +110,26 @@ function install_common_libraries() {
     say_done
 }
 
+
+# 10. Instalar ModEvasive
+function install_modevasive() {
+    write_title "16. Instalar ModEvasive"
+    echo -n " Indique e-mail para recibir alertas: "; read inbox
+    
+    if [ "$inbox" == "" ]; then
+        inbox="root@localhost"
+    fi
+    
+    apt install libapache2-mod-evasive -y
+    mkdir /var/log/mod_evasive
+    chown www-data:www-data /var/log/mod_evasive/
+    modevasive="/etc/apache2/mods-available/mod-evasive.conf"
+    sed s/MAILTO/$inbox/g templates/mod-evasive > $modevasive
+    a2enmod evasive
+    service apache2 restart
+    say_done
+}
+
 # 8. Instalar OWASP para ModSecuity
 function install_owasp_core_rule_set() {
     write_title "14. Instalar OWASP ModSecurity Core Rule Set"
@@ -163,24 +183,6 @@ function configure_apache() {
 
 
 
-# 10. Instalar ModEvasive
-function install_modevasive() {
-    write_title "16. Instalar ModEvasive"
-    echo -n " Indique e-mail para recibir alertas: "; read inbox
-    
-    if [ "$inbox" == "" ]; then
-        inbox="root@localhost"
-    fi
-    
-    apt install libapache2-mod-evasive -y
-    mkdir /var/log/mod_evasive
-    chown www-data:www-data /var/log/mod_evasive/
-    modevasive="/etc/apache2/mods-available/mod-evasive.conf"
-    sed s/MAILTO/$inbox/g templates/mod-evasive > $modevasive
-    a2enmod evasive
-    service apache2 restart
-    say_done
-}
 
 
 # 11. Instalar composer 
