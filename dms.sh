@@ -63,6 +63,8 @@ function tunning_bashrc() {
     cp templates/bashrc-user /home/$username/.bashrc
     chown $username:$username /home/$username/.bashrc
     cp templates/bashrc-user /etc/skel/.bashrc
+	echo 'alias ..="cd .."' >> ~/.bashrc
+	echo 'alias ls -la="lsa"' >> ~/.bashrc
     say_done
 }
 
@@ -182,10 +184,7 @@ function configure_apache() {
 }
 
 
-
-
-
-# 11. Instalar composer 
+# 10. Instalar composer 
 function install_composer() {
 	write_title "13. Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
@@ -194,7 +193,7 @@ function install_composer() {
 }
 
 
-# 9. Instalar y tunear VIM
+# 11. Instalar y tunear VIM
 function install_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
@@ -211,9 +210,11 @@ function install_vim() {
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
 	mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+	echo 'alias sf="php bin/console"' >> ~/.bashrc
     say_done
 }
 
+# Create virtualHost file 
 function install_virtualhost() {
 	sed s/DOMAIN_NAME/$domain_name/g templates/apache-symfony > /etc/apache2/sites-available/000-$domain_name.conf
 	rm /etc/apache2/sites-enabled/000-default.conf
@@ -222,21 +223,6 @@ function install_virtualhost() {
     say_done
 }
 
-#  Reiniciar servidor
-function final_step() {
-    write_title "27. Finalizar deploy"
-    replace USERNAME $username SERVERIP $serverip PUERTO $puerto < templates/texts/bye
-    echo -n " ¿Ha podido conectarse por SHH como $username? (y/n) "
-    read respuesta
-    if [ "$respuesta" == "y" ]; then
-        reboot
-    else
-        # instrucciones
-        echo "El servidor NO será reiniciado. Su conexión permanecerá abierta."
-        cat templates/texts/bug_ubuntu_ssh
-        echo "Para reiniciar el servidor escriba reboot y pulse <ENTER>"
-    fi
-}
 
 set_pause_on                    #  Configurar modo de pausa entre funciones
 is_root_user                    #  0. Verificar si es usuario root o no
