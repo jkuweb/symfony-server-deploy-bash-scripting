@@ -76,7 +76,7 @@ function install_php() {
     curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
     sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
     apt-get update
-    apt install -y \
+       apt install -y \
 		php8.1 \
 		libapache2-mod-php8.1 \
 		php8.1-mysql \
@@ -85,9 +85,9 @@ function install_php() {
 		php8.1-zip \
 		php8.1-curl \
 		apache2  \
-		libapache2-mod-wsgi \
-		python-dev
-    
+		libapache2-mod-wsgi-py3 \
+		python-dev-is-python3
+
     a2enmod rewrite
     a2enmod php8.1
 
