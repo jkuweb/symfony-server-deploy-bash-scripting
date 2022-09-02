@@ -63,8 +63,8 @@ function tunning_bashrc() {
     cp templates/bashrc-user /home/$username/.bashrc
     chown $username:$username /home/$username/.bashrc
     cp templates/bashrc-user /etc/skel/.bashrc
-	echo 'alias ..="cd .."' >> ~/.bashrc
-	echo 'alias ls -la="lsa"' >> ~/.bashrc
+	echo 'alias ..="cd .."' >> /home/$username/.bashrc
+	echo 'alias ls -la="lsa"' >> /home/$username/.bashrc
     say_done
 }
 
@@ -210,7 +210,7 @@ function install_vim() {
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
 	mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
-	echo 'alias sf="php bin/console"' >> ~/.bashrc
+	echo 'alias sf="php bin/console"' >> /home/$username/.bashrc
     say_done
 }
 
@@ -224,6 +224,13 @@ function install_virtualhost() {
 }
 
 
+# Configuring Permissions for Symfony Applications
+function configured_permissions_symfony() {
+	HTTPDUSER=$(ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
+	setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
+	setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
+}
+
 set_pause_on                    #  Configurar modo de pausa entre funciones
 is_root_user                    #  0. Verificar si es usuario root o no
 set_hostname                    #  1. Configurar Hostname
@@ -233,10 +240,11 @@ set_new_user                    #  4. Crear un nuevo usuario con privilegios
 tunning_bashrc                  #  5. Tunnear el archivo .bashrc
 install_php                     #  6. Instalar php
 install_common_libraries        #  7. Instalar extensiones php y librerías 
-install_owasp_core_rule_set
+#install_owasp_core_rule_set
 configure_apache
 install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
 install_virtualhost
+configured_permissions_symfony
