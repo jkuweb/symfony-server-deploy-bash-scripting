@@ -121,7 +121,6 @@ function install_common_libraries() {
 	echo "13.13. Instalar Opcache ........................."; apt install php8.1-opcache -y
 	echo "13.14. Instalar Manpages-dev ...................."; apt install manpages-dev -y
 	echo "13.15. Instalar Libc-devtools ..................."; apt install libc-devtools -y
-	echo "13.15. Instalar Libpng-tools ...................."; apt install lipng-tools -y
     say_done
 }
 
