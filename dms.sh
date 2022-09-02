@@ -76,7 +76,17 @@ function install_php() {
     curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
     sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
     apt-get update
-    apt install -y php8.1 libapache2-mod-php8.1 php8.1-mysql php8.1-xml php8.1-mbstring php8.1-zip php8.1-curl
+    apt install -y \
+		php8.1 \
+		libapache2-mod-php8.1 \
+		php8.1-mysql \
+		php8.1-xml \
+		php8.1-mbstring \
+		php8.1-zip \
+		php8.1-curl \
+		apache2  \
+		libapache2-mod-wsgi \
+		python-dev
     
     a2enmod rewrite
     a2enmod php8.1
@@ -101,14 +111,17 @@ function install_common_libraries() {
 	echo "13.3.  Instalar Openssh-client..................."; apt install openssh-client -y
 	echo "13.4.  Instalar Openssh-client..................."; apt install openssh-client -y
 	echo "13.5.  Instalar Wget............................."; apt install wget -y
-	echo "13.6.  Instalar Zip.............................."; apt install zip -y
+	echo "13.6.  Instalar Unzip............................"; apt install unzip -y
 	echo "13.7.  Instalar Libpng-dev......................."; apt install libpng-dev -y
 	echo "13.8.  Instalar Zlib1g-dev......................."; apt install zlib1g-dev -y
 	echo "13.9.  Instalar Libzip-dev......................."; apt install libzip-dev -y
-	echo "13.10. Instalar Libxml2-dev......................."; apt install libxml2-dev -y
+	echo "13.10. Instalar Libxml2-dev......................"; apt install libxml2-dev -y
 	echo "13.11. Instalar Libicu-dev......................."; apt install libicu-dev -y
-	echo "13.12. Instalar Intl ......................."; apt install php8.1-intl -y
-	echo "13.13. Instalar Opcache ......................."; apt install php8.1-opcache -y
+	echo "13.12. Instalar Intl ............................"; apt install php8.1-intl -y
+	echo "13.13. Instalar Opcache ........................."; apt install php8.1-opcache -y
+	echo "13.14. Instalar Manpages-dev ...................."; apt install manpages-dev -y
+	echo "13.15. Instalar Libc-devtools ..................."; apt install libc-devtools -y
+	echo "13.15. Instalar Libpng-tools ...................."; apt install lipng-tools -y
     say_done
 }
 
