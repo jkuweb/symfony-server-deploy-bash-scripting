@@ -190,7 +190,7 @@ function install_owasp_core_rule_set() {
 # 9. Configurar y optimizar Apache
 function configure_apache() {
     write_title "15. Finalizar configuración y optimización de Apache"
-    #cp templates/apache /etc/apache2/apache2.conf
+    cp templates/apache /etc/apache2/apache2.conf
     service apache2 restart
     say_done
 }
@@ -236,13 +236,6 @@ function install_virtualhost() {
 }
 
 
-# Configuring Permissions for Symfony Applications
-function configured_permissions_symfony() {
-	HTTPDUSER=$(ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
-	setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
-	setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
-}
-
 set_pause_on                    #  Configurar modo de pausa entre funciones
 is_root_user                    #  0. Verificar si es usuario root o no
 set_hostname                    #  1. Configurar Hostname
@@ -259,4 +252,3 @@ install_composer
 install_vim
 install_symfony_binary
 install_virtualhost
-#configured_permissions_symfony

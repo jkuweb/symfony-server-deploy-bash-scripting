@@ -20,13 +20,21 @@ function is_root_user() {
 	fi
 }
 
+ # 1. Configurar Hostname
+function set_hostname() {
+     write_title "1. Dominio principal"
+     echo -n " ¿Cúal será el dominio principal? "; read domain_name
+     say_done
+}
+
 # 1. Configuring Permissions for Symfony Applications
 function configured_permissions_symfony() {
 	HTTPDUSER=$(ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
-	setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
-	setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /home/srv/websites/$domain_name/var
+	setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /srv/websites/$domain_name/var
+	setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /srv/websites/$domain_name/var
 }
 
 set_pause_on
 is_root_user
+set_hostname
 configured_permissions_symfony
