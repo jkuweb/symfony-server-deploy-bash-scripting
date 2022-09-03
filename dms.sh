@@ -92,7 +92,7 @@ function install_php() {
     a2enmod php8.1
 
     echo -n " reemplazando archivo de configuración php.ini..."
-    cp templates/php /etc/php/8.1/apache2/php.ini; echo " OK"
+    #cp templates/php /etc/php/8.1/apache2/php.ini; echo " OK"
     service apache2 restart
     mkdir /srv/websites
     chown -R $username:$username /srv/websites
@@ -190,7 +190,7 @@ function install_owasp_core_rule_set() {
 # 9. Configurar y optimizar Apache
 function configure_apache() {
     write_title "15. Finalizar configuración y optimización de Apache"
-    cp templates/apache /etc/apache2/apache2.conf
+    #cp templates/apache /etc/apache2/apache2.conf
     service apache2 restart
     say_done
 }
@@ -254,9 +254,9 @@ install_php                     #  6. Instalar php
 install_common_libraries        #  7. Instalar extensiones php y librerías 
 #install_owasp_core_rule_set
 configure_apache
-install_modevasive
+#install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
 install_virtualhost
-configured_permissions_symfony
+#configured_permissions_symfony
