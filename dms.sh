@@ -252,9 +252,9 @@ set_new_user                    #  4. Crear un nuevo usuario con privilegios
 tunning_bashrc                  #  5. Tunnear el archivo .bashrc
 install_php                     #  6. Instalar php
 install_common_libraries        #  7. Instalar extensiones php y librerías 
-#install_owasp_core_rule_set
+install_owasp_core_rule_set
 configure_apache
-#install_modevasive
+install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
