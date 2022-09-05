@@ -6,15 +6,19 @@ source helpers.sh
 declare -r optional_arg="$1"
 
 export serverip=$(__get_ip)
+
+
 # 0. Verificar si es usuario root o no 
-function is_root_user() { 
-   if [ echo whoami == "root" ]; then 
-		   echo "Permiso denegado." 
-		   echo -n "Este programa no puede ser ejecutado por el usuario root" 
-		   exit 
+function is_root_user() {
+     user=$(id -u)
+     write_title "Verificar si no es usuario root"
+     if [ $user == 0  ]; then
+      echo "Permiso denegado." 
+      echo -n "Este programa no puede ser ejecutado por el usuario root"
+      exit 
    else 
-		   clear 
-		   cat templates/texts/welcome 
+      clear 
+      cat templates/texts/welcome 
    fi 
 } 
 
