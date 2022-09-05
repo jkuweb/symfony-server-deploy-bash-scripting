@@ -67,14 +67,6 @@ function generated_production_envirenment_file() {
 }
 
 
-# 7. Configuring Permissions for Symfony Applications
-function configured_permissions_symfony() {
-        HTTPDUSER=$(ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
-        setfacl -dR -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /srv/websites/$domain_name/var
-        setfacl -R -m u:"$HTTPDUSER":rwX -m u:$(whoami):rwX /srv/websites/$domain_name/var
-}
-
-
 set_pause_on
 is_root_user
 set_hostname
