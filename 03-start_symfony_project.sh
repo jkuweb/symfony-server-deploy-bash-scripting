@@ -38,15 +38,12 @@ function execute_composer() {
 }
 
 
-
-
 # 5. Ejecutar dump-autoload 
 function execute_dump_autoload() {
      write_title "5. Ejecutar dump-autoload"
      (cd /srv/websites/$domain_name/ && composer dump-autoload --optimize --no-dev --classmap-authoritative)
      say_done
 }
-
 
 
 # 6. Generar el fichero `.env.prod.php'"
