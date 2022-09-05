@@ -17,6 +17,7 @@ function is_root_user() {
 	fi
 }
 
+
 # 1. Configurar Hostname
 function set_hostname() {
 	write_title "1. Configurar Hostname"
@@ -33,6 +34,7 @@ function set_hostname() {
 	say_done
 }
 
+
 # 2. Configurar zona horaria
 function set_hour() {
     write_title "2. Configuración de la zona horaria"
@@ -41,13 +43,15 @@ function set_hour() {
 }
 
 
+# 3. Actualizar el sistema
 function sysupdate() {
     write_title "3. Actualización del sistema"
     apt update && apt upgrade -y
     say_done
 }
 
-#  4. Crear un nuevo usuario con privilegios
+
+# 4. Crear un nuevo usuario con privilegios
 function set_new_user() {
     write_title "4. Creación de un nuevo usuario"
     echo -n " Indique un nombre para el nuevo usuario: "; read username
@@ -92,7 +96,7 @@ function install_php() {
     a2enmod php8.1
 
     echo -n " reemplazando archivo de configuración php.ini..."
-    #cp templates/php /etc/php/8.1/apache2/php.ini; echo " OK"
+    cp templates/php /etc/php/8.1/apache2/php.ini; echo " OK"
     service apache2 restart
     mkdir /srv/websites
     chown -R $username:$username /srv/websites
@@ -102,6 +106,7 @@ function install_php() {
     echo "/etc/php/8.1/apache2/php.ini"
     say_done
 }
+
 
 # 7. Instalar librerías comunes
 function install_common_libraries() {
@@ -143,6 +148,7 @@ function install_modevasive() {
     service apache2 restart
     say_done
 }
+
 
 # 8. Instalar OWASP para ModSecuity
 function install_owasp_core_rule_set() {
@@ -218,6 +224,7 @@ function install_vim() {
     say_done
 }
 
+
 # Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
@@ -236,15 +243,15 @@ function install_virtualhost() {
 }
 
 
-set_pause_on                    #  Configurar modo de pausa entre funciones
-is_root_user                    #  0. Verificar si es usuario root o no
-set_hostname                    #  1. Configurar Hostname
-set_hour                        #  2. Configurar zona horaria
+set_pause_on                    
+is_root_user                    
+set_hostname                    
+set_hour                        
 sysupdate
-set_new_user                    #  4. Crear un nuevo usuario con privilegios
-tunning_bashrc                  #  5. Tunnear el archivo .bashrc
-install_php                     #  6. Instalar php
-install_common_libraries        #  7. Instalar extensiones php y librerías 
+set_new_user                    
+tunning_bashrc                  
+install_php                     
+install_common_libraries        
 install_owasp_core_rule_set
 configure_apache
 install_modevasive

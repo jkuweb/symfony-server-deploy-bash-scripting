@@ -41,7 +41,6 @@ register_globals = Off
 register_long_arrays = Off
 register_argc_argv = Off
 auto_globals_jit = On
-post_max_size = 8M
 magic_quotes_gpc = Off
 magic_quotes_runtime = Off
 magic_quotes_sybase = Off
@@ -53,11 +52,15 @@ doc_root =
 user_dir =
 enable_dl = Off
 file_uploads = On
-upload_max_filesize = 2M
 max_file_uploads = 20
 allow_url_fopen = Off
 allow_url_include = Off
 default_socket_timeout = 60
+memory_limit=1024M
+
+
+upload_max_filesize = 20M
+post_max_size = 20M
 
 [Date]
 
@@ -258,3 +261,13 @@ ldap.max_links = -1
 
 [xsl]
 
+[opcache]
+
+opcache.enable=1
+opcache.revalidate_freq=10
+opcache.validate_timestamps=1
+opcache.max_accelerated_files=10000
+opcache.memory_consumption=192
+opcache.max_wasted_percentage=10
+opcache.interned_strings_buffer=1
+opcache.fast_shutdown=1
