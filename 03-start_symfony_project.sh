@@ -55,7 +55,7 @@ function generated_production_envirenment_file() {
      number=$(grep -n DATABASE_URL  $file_path | grep -Eo '^[^:]+')
      sed -i "${number}d" $file_path
 
-     sed -i -e "s/SITE_BASE_URL=https:\/\/localhost:8000/SITE_BASE_URL=${domain_name}/g" $file_path
+     sed -i -e "s/SITE_BASE_URL=https:\/\/localhost:8000/SITE_BASE_URL=https:\/\/${domain_name}/g" $file_path
 
      echo -n " Indica el usuario de la DDBB: "; read db_user_name
      echo -n "Introduce el password para la DDBB: "; read db_psswd
