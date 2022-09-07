@@ -88,6 +88,7 @@ function install_php() {
 		php8.1-mbstring \
 		php8.1-zip \
 		php8.1-curl \
+		php8.1-gd \
 		apache2  \
 		libapache2-mod-wsgi-py3 \
 		python-dev-is-python3
