@@ -285,7 +285,7 @@ function install_composer() {
 
 
 # 19. Instalar y tunear VIM
-function install_vim() {
+function tunning_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
 	chown -R $username:$username my-vim/
@@ -315,7 +315,41 @@ function install_virtualhost() {
     say_done
 }
 
+# 25. Asegurar Kernel contra ataques de red
+function kernel_config() {
+    write_title "25. Asegurar Kernel contra ataques de red (C) Jason Soto 2015"
+    cp templates/sysctl /etc/sysctl.conf
+    sysctl -e -p
+    say_done
+}
 
+# 24. Instalar PortSentry
+function install_portsentry() {
+    write_title "24. Instalar y configurar el antiscan de puertos PortSentry"
+    apt install portsentry -y
+    mv /etc/portsentry/portsentry.conf /etc/portsentry/portsentry.conf-original
+    cp templates/portsentry /etc/portsentry/portsentry.conf
+    sed s/tcp/atcp/g /etc/default/portsentry > salida.tmp
+    mv salida.tmp /etc/default/portsentry
+    /etc/init.d/portsentry restart
+    say_done
+}
+
+# 27. Reiniciar servidor
+function final_step() {
+    write_title "27. Finalizar deploy"
+    replace USERNAME $username SERVERIP $serverip PUERTO $puerto < templates/texts/bye
+    echo -n " ¿Ha podido conectarse por SHH como $username? (y/n) "
+    read respuesta
+    if [ "$respuesta" == "y" ]; then
+        reboot
+    else
+        # instrucciones
+        echo "El servidor NO será reiniciado. Su conexión permanecerá abierta."
+        cat templates/texts/bug_ubuntu_ssh
+        echo "Para reiniciar el servidor escriba reboot y pulse <ENTER>"
+    fi
+}
 
 set_pause_on                   
 
