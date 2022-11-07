@@ -59,8 +59,76 @@ function set_new_user() {
     say_done
 }
 
+#  5. Instrucciones para generar una RSA Key
+function give_instructions() {
+    write_title "5. Generación de llave RSA en su ordenador local"
+    echo " *** SI NO TIENE UNA LLAVE RSA PÚBLICA EN SU ORDENADOR, GENERE UNA ***"
+    echo "     Siga las instrucciones y pulse INTRO cada vez que termine una"
+    echo "     tarea para recibir una nueva instrucción"
+    echo " "
+    echo "     EJECUTE LOS SIGUIENTES COMANDOS:"
+    echo -n "     a) ssh-keygen "; read foo1
+    echo -n "     b) scp .ssh/id_rsa.pub $username@$serverip:/home/$username/ "; read foo2
+    say_done
+}
 
-# 5. Tunnear el archivo .bashrc
+
+#  6. Mover la llave pública RSA generada
+function move_rsa() {
+    write_title "6. Se moverá la llave pública RSA generada en el paso 5"
+    mkdir /home/$username/.ssh
+    mv /home/$username/id_rsa.pub /home/$username/.ssh/authorized_keys
+    chmod 700 /home/$username/.ssh
+    chmod 600 /home/$username/.ssh/authorized_keys
+    chown -R $username:$username /home/$username/.ssh
+    say_done
+}
+
+#  7. Securizar SSH
+function ssh_reconfigure() {
+    write_title "7. Securizar accesos SSH"
+    
+    if [ "$optional_arg" == "--custom" ]; then
+        echo -n "Puerto SSH (Ej: 372): "; read puerto
+    else
+        puerto="372"
+    fi
+
+    sed s/USERNAME/$username/g templates/sshd_config > /tmp/sshd_config
+    sed s/PUERTO/$puerto/g /tmp/sshd_config > /etc/ssh/sshd_config
+    service ssh restart
+    say_done
+}
+
+
+#  8. Establecer reglas para iptables
+function set_iptables_rules() {
+    write_title "8. Establecer reglas para iptables (firewall)"
+    sed s/PUERTO/$puerto/g templates/iptables > /etc/iptables.firewall.rules
+    iptables-restore < /etc/iptables.firewall.rules
+    say_done
+}
+
+
+#  9. Crear script de automatizacion iptables
+function create_iptable_script() {
+    write_title "9. Crear script de automatización de reglas de iptables tras reinicio"
+    cat templates/firewall > /etc/network/if-pre-up.d/firewall
+    chmod +x /etc/network/if-pre-up.d/firewall
+    say_done
+}
+
+
+# 10. Instalar fail2ban
+function install_fail2ban() {
+    # para eliminar una regla de fail2ban en iptables utilizar:
+    # iptables -D fail2ban-ssh -s IP -j DROP
+    write_title "10. Instalar fail2ban"    
+    apt install fail2ban -y
+    say_done
+}
+
+# 11. Tunnear el archivo .bashrc
 function tunning_bashrc() {
     write_title "19. Reemplazar .bashrc"
     cp templates/bashrc-root /root/.bashrc
@@ -73,7 +141,7 @@ function tunning_bashrc() {
 }
 
 
-# 6. Instalar, configurar y optimizar PHP
+# 12. Instalar, configurar y optimizar PHP
 function install_php() {
     write_title "12. Instalar PHP 8.1 + Apache 2"
     apt-get -y install apt-transport-https lsb-release ca-certificates curl
@@ -109,7 +177,7 @@ function install_php() {
 }
 
 
-# 7. Instalar librerías comunes
+# 13. Instalar librerías comunes
 function install_common_libraries() {
 	write_title "13. Instalar librerías para php"
 	echo "13.1.  Instalar Access Control List.............."; apt install acl -y
@@ -131,7 +199,7 @@ function install_common_libraries() {
 }
 
 
-# 10. Instalar ModEvasive
+# 14. Instalar ModEvasive
 function install_modevasive() {
     write_title "16. Instalar ModEvasive"
     echo -n " Indique e-mail para recibir alertas: "; read inbox
@@ -151,7 +219,7 @@ function install_modevasive() {
 }
 
 
-# 8. Instalar OWASP para ModSecuity
+# 15. Instalar OWASP para ModSecuity
 function install_owasp_core_rule_set() {
     write_title "14. Instalar OWASP ModSecurity Core Rule Set"
     apt install libmodsecurity3 -y
@@ -198,7 +266,7 @@ function install_owasp_core_rule_set() {
 }
 
 
-# 9. Configurar y optimizar Apache
+# 17. Configurar y optimizar Apache
 function configure_apache() {
     write_title "15. Finalizar configuración y optimización de Apache"
     cp templates/apache /etc/apache2/apache2.conf
@@ -207,7 +275,7 @@ function configure_apache() {
 }
 
 
-# 10. Instalar composer 
+# 18. Instalar composer 
 function install_composer() {
 	write_title "13. Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
@@ -216,7 +284,7 @@ function install_composer() {
 }
 
 
-# 11. Instalar y tunear VIM
+# 19. Instalar y tunear VIM
 function install_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
@@ -230,7 +298,7 @@ function install_vim() {
 }
 
 
-# Install Symfony binary
+# 20 Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
 	mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
@@ -238,7 +306,7 @@ function install_symfony_binary() {
     say_done
 }
 
-# Create virtualHost file 
+# 21 Create virtualHost file 
 function install_virtualhost() {
 	sed s/DOMAIN_NAME/$domain_name/g templates/apache-symfony > /etc/apache2/sites-available/000-$domain_name.conf
 	rm /etc/apache2/sites-enabled/000-default.conf
@@ -248,19 +316,30 @@ function install_virtualhost() {
 }
 
 
-set_pause_on                    
+
+set_pause_on                   
+
 is_root_user                    
 set_hostname                    
 set_hour                        
-sysupdate
+sysupdate                       
 set_new_user                    
-tunning_bashrc                  
+give_instructions               
+move_rsa                        
+ssh_reconfigure                 
+set_iptables_rules              
+create_iptable_script           
+install_fail2ban                
 install_php                     
-install_common_libraries        
-install_owasp_core_rule_set
-configure_apache
-install_modevasive
-install_composer 
-install_vim
+install_common_libraries
+install_modsecurity             
+install_owasp_core_rule_set                    
+configure_apache				
+install_modevasive             
+config_fail2ban                 
 install_symfony_binary
 install_virtualhost
+tunning_vim     
+install_portsentry              
+kernel_config    
+final_step                     
