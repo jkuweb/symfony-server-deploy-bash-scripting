@@ -162,23 +162,23 @@ function install_owasp_core_rule_set() {
     
     
     write_title "14.3 Mover archivo de configuración"    
-    mv /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf.example \
-     /etc/apache2/modsecurity.d/coreruleset/crs-setup.conf
+    mv /etc/apache2/modsecurity.d/crs-setup.conf.example \
+     /etc/apache2/modsecurity.d/crs-setup.conf
     
     write_title "14.4 Renombrar reglas de pre y post ejecución" 
 
-    mv /etc/apache2/modsecurity.d/coreruleset/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
-     /etc/apache2/modsecurity.d/coreruleset/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+    mv /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
+     /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
 
-    mv /etc/apache2/modsecurity.d/coreruleset/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
-     /etc/apache2/modsecurity.d/coreruleset/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    mv /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
+     /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
     write_title "14.5 modsecurity.conf-recommended" 
-    touch /etc/apache2/modsecurity.d/coreruleset/modsecurity.conf
-    echo templates/modsecurity >> /etc/apache2/modsecurity.d/coreruleset/modsecurity.conf
+    touch /etc/apache2/modsecurity.d/modsecurity.conf
+    echo templates/modsecurity >> /etc/apache2/modsecurity.d/modsecurity.conf
     
-    modsecrec="/etc/apache2/modsecurity.d/coreruleset/modsecurity.conf"
+    modsecrec="/etc/apache2/modsecurity.d/modsecurity.conf"
     sed s/SecRuleEngine\ DetectionOnly/SecRuleEngine\ On/g $modsecrec > /tmp/salida   
-    mv /tmp/salida /etc/apache2/modsecurity.d/coreruleset/modsecurity.conf
+    mv /tmp/salida /etc/apache2/modsecurity.d/modsecurity.conf
     
     if [ "$optional_arg" == "--custom" ]; then
         echo -n "Firma servidor: "; read firmaserver
@@ -188,7 +188,7 @@ function install_owasp_core_rule_set() {
         poweredby="n/a"
     fi    
     
-    modseccrs10su="/etc/apache2/modsecurity.d/coreruleset/crs-setup.conf"
+    modseccrs10su="/etc/apache2/modsecurity.d/crs-setup.conf"
     echo "SecServerSignature \"$firmaserver\"" >> $modseccrs10su
     echo "Header set X-Powered-By \"$poweredby\"" >> $modseccrs10su
 
