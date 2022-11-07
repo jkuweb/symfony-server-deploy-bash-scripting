@@ -158,12 +158,14 @@ function install_owasp_core_rule_set() {
     
     write_title "14.2 Clonar repositorio"
 
-    wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v3.3.4.tar.gz /etc/apache2/modsecurity.d
-    tar -xzvf v3.3.4.tar.gz
-    mv coreruleset-3.3.4/ owasp-modsecurity-crs/
-    mv  owasp-modsecurity-crs/ /etc/apache2/modsecurity.d/
+    wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v3.3.4.tar.gz /etc/apache2/modsecurity.d/
+    tar -xzvf /etc/apache2/modsecurity.d/v3.3.4.tar.gz
+    rm -rf /etc/apache2/modsecurity.d/v3.3.4.tar.gz
+    mv  /etc/apache2/modsecurity.d/v3.3.4.tar.gz  /etc/apache2/modsecurity.d/owasp-modsecurity-crs
+    
     
     write_title "14.3 Mover archivo de configuración"
+    mv /etc/apache2/modsecurity.d/coreruleset-3.3.4/ /etc/apache2/modsecurity.d/owasp-modsecurity-crs/
     mv /etc/apache2/modsecurity.d/owasp-modsecurity-crs/crs-setup.conf.example \
      /etc/apache2/modsecurity.d/owasp-modsecurity-crs/crs-setup.conf
     
