@@ -258,8 +258,8 @@ tunning_bashrc
 install_php                     
 install_common_libraries        
 install_owasp_core_rule_set
-#configure_apache
-#install_modevasive
+configure_apache
+install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
