@@ -259,7 +259,7 @@ set_new_user
 tunning_bashrc                  
 install_php                     
 install_common_libraries        
-#install_owasp_core_rule_set
+install_owasp_core_rule_set
 #configure_apache
 #install_modevasive
 install_composer 
