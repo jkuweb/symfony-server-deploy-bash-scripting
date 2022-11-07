@@ -154,27 +154,33 @@ function install_modevasive() {
 # 8. Instalar OWASP para ModSecuity
 function install_owasp_core_rule_set() {
     write_title "14. Instalar OWASP ModSecurity Core Rule Set"
+    apt install libmodsecurity3 -y
     
     write_title "14.2 Clonar repositorio"
-    mkdir /etc/apache2/modsecurity.d
-    git clone https://github.com/SpiderLabs/owasp-modsecurity-crs /etc/apache2/modsecurity.d
+
+    wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v3.3.4.tar.gz /etc/apache2/modsecurity.d
+    tar -xzvf v3.3.4.tar.gz
+    mv coreruleset-3.3.4/ owasp-modsecurity-crs/
+    mv  owasp-modsecurity-crs/ /etc/apache2/modsecurity.d/
     
     write_title "14.3 Mover archivo de configuración"
-    mv /etc/apache2/modsecurity.d/crs-setup.conf.example /etc/apache2/modsecurity.d/crs-setup.conf
+    mv /etc/apache2/modsecurity.d/owasp-modsecurity-crs/crs-setup.conf.example \
+     /etc/apache2/modsecurity.d/owasp-modsecurity-crs/crs-setup.conf
     
-    write_title "14.4 Renombrar reglas de pre y post ejecución"
-    mv /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
-        /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
-    mv /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
-        /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-    
-    write_title "14.4 Reemplazar configuración del módulo"
-    cp templates/security2 /etc/apache2/mods-available/security2.conf 
-    
+    write_title "14.4 Renombrar reglas de pre y post ejecución" 
 
-    modsecrec="/etc/modsecurity/modsecurity.conf"
-    sed s/SecRuleEngine\ DetectionOnly/SecRuleEngine\ On/g $modsecrec > /tmp/salida
-    mv /tmp/salida /etc/modsecurity/modsecurity.conf
+    mv /etc/apache2/modsecurity.d/owasp-modsecurity-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
+     /etc/apache2/modsecurity.d/owasp-modsecurity-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+
+    mv /etc/apache2/modsecurity.d/owasp-modsecurity-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
+     /etc/apache2/modsecurity.d/owasp-modsecurity-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    write_title "14.5 modsecurity.conf-recommended" 
+    touch /etc/apache2/modsecurity.d/owasp-modsecurity-crs/modsecurity.conf
+    echo templates/modsecurity >> /etc/apache2/modsecurity.d/owasp-modsecurity-crs/modsecurity.conf
+    
+    modsecrec="/etc/apache2/modsecurity.d/owasp-modsecurity-crs/modsecurity.conf"
+    sed s/SecRuleEngine\ DetectionOnly/SecRuleEngine\ On/g $modsecrec > /tmp/salida   
+    mv /tmp/salida /etc/apache2/modsecurity.d/owasp-modsecurity-crs/modsecurity.conf
     
     if [ "$optional_arg" == "--custom" ]; then
         echo -n "Firma servidor: "; read firmaserver
@@ -182,9 +188,9 @@ function install_owasp_core_rule_set() {
     else
         firmaserver="Oracle Solaris 11.2"
         poweredby="n/a"
-    fi
+    fi    
     
-    modseccrs10su="/etc/apache2/modsecurity.d/crs-setup.conf"
+    modseccrs10su="/etc/apache2/modsecurity.d/owasp-modsecurity-crs/crs-setup.conf"
     echo "SecServerSignature \"$firmaserver\"" >> $modseccrs10su
     echo "Header set X-Powered-By \"$poweredby\"" >> $modseccrs10su
 
@@ -253,9 +259,9 @@ set_new_user
 tunning_bashrc                  
 install_php                     
 install_common_libraries        
-install_owasp_core_rule_set
-configure_apache
-install_modevasive
+#install_owasp_core_rule_set
+#configure_apache
+#install_modevasive
 install_composer 
 install_vim
 install_symfony_binary
