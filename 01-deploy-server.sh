@@ -157,7 +157,7 @@ function install_owasp_core_rule_set() {
     apt install libmodsecurity3 -y
     
     write_title "14.2 Clonar repositorio"
-
+    mkdir /etc/apache2/modsecurity.d/
     wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v3.3.4.tar.gz /etc/apache2/modsecurity.d/
     tar -xzvf /etc/apache2/modsecurity.d/v3.3.4.tar.gz
     rm -rf /etc/apache2/modsecurity.d/v3.3.4.tar.gz
