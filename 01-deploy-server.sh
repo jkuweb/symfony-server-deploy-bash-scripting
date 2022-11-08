@@ -372,7 +372,8 @@ install_common_libraries
 install_owasp_core_rule_set                    
 configure_apache				
 install_modevasive             
-config_fail2ban                 
+config_fail2ban       
+install_composer          
 install_symfony_binary
 install_virtualhost
 tunning_vim     
