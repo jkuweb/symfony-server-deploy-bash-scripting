@@ -286,6 +286,14 @@ function configure_apache() {
     say_done
 }
 
+# Configurar fail2ban
+function config_fail2ban() {
+    write_title "17. Finalizar configuración de fail2ban"
+    cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
+    cp templates/fail2ban /etc/fail2ban/jail.local
+    /etc/init.d/fail2ban restart
+    say_done
+}
 
 # Instalar composer 
 function install_composer() {
