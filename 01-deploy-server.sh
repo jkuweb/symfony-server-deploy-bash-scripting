@@ -20,7 +20,7 @@ function is_root_user() {
 
 # 1. Configurar Hostname
 function set_hostname() {
-	write_title "1. Configurar Hostname"
+	write_title "Configurar Hostname"
 	echo -n " ¿Desea configurar un hostname? (y/n): "; read config_host
 	if [ "$config_host" == "y" ]; then
 		echo " Ingrese un nombre para identificar a este servidor"
@@ -34,6 +34,8 @@ function set_hostname() {
 	say_done
 }
 
+
+# Configurar locale
 function set_locale() {
 	write_title "Configurar locale"
 	export LANGUAJE=es_ES.UTF-8
@@ -44,33 +46,33 @@ function set_locale() {
 }
 
 
-# 2. Configurar zona horaria
+# Configurar zona horaria
 function set_hour() {
-    write_title "2. Configuración de la zona horaria"
+    write_title "Configuración de la zona horaria"
     dpkg-reconfigure tzdata
     say_done
 }
 
 
-# 3. Actualizar el sistema
+# Actualizar el sistema
 function sysupdate() {
-    write_title "3. Actualización del sistema"
+    write_title "Actualización del sistema"
     apt update && apt upgrade -y
     say_done
 }
 
 
-# 4. Crear un nuevo usuario con privilegios
+# Crear un nuevo usuario con privilegios
 function set_new_user() {
-    write_title "4. Creación de un nuevo usuario"
+    write_title "Creación de un nuevo usuario"
     echo -n " Indique un nombre para el nuevo usuario: "; read username
     adduser $username
     say_done
 }
 
-#  5. Instrucciones para generar una RSA Key
+# Instrucciones para generar una RSA Key
 function give_instructions() {
-    write_title "5. Generación de llave RSA en su ordenador local"
+    write_title "Generación de llave RSA en su ordenador local"
     echo " *** SI NO TIENE UNA LLAVE RSA PÚBLICA EN SU ORDENADOR, GENERE UNA ***"
     echo "     Siga las instrucciones y pulse INTRO cada vez que termine una"
     echo "     tarea para recibir una nueva instrucción"
@@ -82,9 +84,9 @@ function give_instructions() {
 }
 
 
-#  6. Mover la llave pública RSA generada
+#  Mover la llave pública RSA generada
 function move_rsa() {
-    write_title "6. Se moverá la llave pública RSA generada en el paso 5"
+    write_title "Se moverá la llave pública RSA generada en el paso 5"
     mkdir /home/$username/.ssh
     mv /home/$username/id_rsa.pub /home/$username/.ssh/authorized_keys
     chmod 700 /home/$username/.ssh
@@ -93,9 +95,9 @@ function move_rsa() {
     say_done
 }
 
-#  7. Securizar SSH
+#  Securizar SSH
 function ssh_reconfigure() {
-    write_title "7. Securizar accesos SSH"
+    write_title "Securizar accesos SSH"
     
     if [ "$optional_arg" == "--custom" ]; then
         echo -n "Puerto SSH (Ej: 372): "; read puerto
@@ -110,36 +112,37 @@ function ssh_reconfigure() {
 }
 
 
-#  8. Establecer reglas para iptables
+#  Establecer reglas para iptables
 function set_iptables_rules() {
-    write_title "8. Establecer reglas para iptables (firewall)"
+    write_title "Establecer reglas para iptables (firewall)"
+    apt install iptables -y 
     sed s/PUERTO/$puerto/g templates/iptables > /etc/iptables.firewall.rules
     iptables-restore < /etc/iptables.firewall.rules
     say_done
 }
 
 
-#  9. Crear script de automatizacion iptables
+#  Crear script de automatizacion iptables
 function create_iptable_script() {
-    write_title "9. Crear script de automatización de reglas de iptables tras reinicio"
+    write_title "Crear script de automatización de reglas de iptables tras reinicio"
     cat templates/firewall > /etc/network/if-pre-up.d/firewall
     chmod +x /etc/network/if-pre-up.d/firewall
     say_done
 }
 
 
-# 10. Instalar fail2ban
+# Instalar fail2ban
 function install_fail2ban() {
     # para eliminar una regla de fail2ban en iptables utilizar:
     # iptables -D fail2ban-ssh -s IP -j DROP
-    write_title "10. Instalar fail2ban"    
+    write_title "Instalar fail2ban"    
     apt install fail2ban -y
     say_done
 }
 
-# 11. Tunnear el archivo .bashrc
+# Tunnear el archivo .bashrc
 function tunning_bashrc() {
-    write_title "19. Reemplazar .bashrc"
+    write_title "Reemplazar .bashrc"
     cp templates/bashrc-root /root/.bashrc
     cp templates/bashrc-user /home/$username/.bashrc
     chown $username:$username /home/$username/.bashrc
@@ -150,9 +153,9 @@ function tunning_bashrc() {
 }
 
 
-# 12. Instalar, configurar y optimizar PHP
+# Instalar, configurar y optimizar PHP
 function install_php() {
-    write_title "12. Instalar PHP 8.1 + Apache 2"
+    write_title "Instalar PHP 8.1 + Apache 2"
     apt-get -y install apt-transport-https lsb-release ca-certificates curl
     curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
     sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
@@ -186,9 +189,9 @@ function install_php() {
 }
 
 
-# 13. Instalar librerías comunes
+# Instalar librerías comunes
 function install_common_libraries() {
-	write_title "13. Instalar librerías para php"
+	write_title "Instalar librerías para php"
 	echo "13.1.  Instalar Access Control List.............."; apt install acl -y
 	echo "13.2.  Instalar Openssl.........................."; apt install openssl -y
 	echo "13.3.  Instalar Openssh-client..................."; apt install openssh-client -y
@@ -208,9 +211,9 @@ function install_common_libraries() {
 }
 
 
-# 14. Instalar ModEvasive
+# Instalar ModEvasive
 function install_modevasive() {
-    write_title "16. Instalar ModEvasive"
+    write_title "Instalar ModEvasive"
     echo -n " Indique e-mail para recibir alertas: "; read inbox
     
     if [ "$inbox" == "" ]; then
@@ -228,28 +231,28 @@ function install_modevasive() {
 }
 
 
-# 15. Instalar OWASP para ModSecuity
+# Instalar OWASP para ModSecuity
 function install_owasp_core_rule_set() {
-    write_title "14. Instalar OWASP ModSecurity Core Rule Set"
+    write_title "Instalar OWASP ModSecurity Core Rule Set"
     apt install libmodsecurity3 -y
     
-    write_title "14.2 Clonar repositorio"
+    write_title "Clonar repositorio"
     mkdir /etc/apache2/modsecurity.d/
     git clone https://github.com/coreruleset/coreruleset.git /etc/apache2/modsecurity.d/       
     
     
-    write_title "14.3 Mover archivo de configuración"    
+    write_title "Mover archivo de configuración"    
     mv /etc/apache2/modsecurity.d/crs-setup.conf.example \
      /etc/apache2/modsecurity.d/crs-setup.conf
     
-    write_title "14.4 Renombrar reglas de pre y post ejecución" 
+    write_title "Renombrar reglas de pre y post ejecución" 
 
     mv /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example \
      /etc/apache2/modsecurity.d/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
 
     mv /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example \
      /etc/apache2/modsecurity.d/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-    write_title "14.5 modsecurity.conf-recommended" 
+    write_title "modsecurity.conf-recommended" 
     touch /etc/apache2/modsecurity.d/modsecurity.conf
     echo templates/modsecurity >> /etc/apache2/modsecurity.d/modsecurity.conf
     
@@ -275,25 +278,25 @@ function install_owasp_core_rule_set() {
 }
 
 
-# 17. Configurar y optimizar Apache
+# Configurar y optimizar Apache
 function configure_apache() {
-    write_title "15. Finalizar configuración y optimización de Apache"
+    write_title "Finalizar configuración y optimización de Apache"
     cp templates/apache /etc/apache2/apache2.conf
     service apache2 restart
     say_done
 }
 
 
-# 18. Instalar composer 
+# Instalar composer 
 function install_composer() {
-	write_title "13. Instalar composer"
+	write_title "Instalar composer"
 	curl https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 	composer self-update	
     say_done
 }
 
 
-# 19. Instalar y tunear VIM
+# Instalar y tunear VIM
 function tunning_vim() {
 	apt install vim -y 
 	git clone https://github.com/jkuweb/my-vim.git	
@@ -307,7 +310,7 @@ function tunning_vim() {
 }
 
 
-# 20 Install Symfony binary
+# Install Symfony binary
 function install_symfony_binary() {
 	wget https://get.symfony.com/cli/installer -O - | bash
 	mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
@@ -315,7 +318,7 @@ function install_symfony_binary() {
     say_done
 }
 
-# 21 Create virtualHost file 
+# Create virtualHost file 
 function install_virtualhost() {
 	sed s/DOMAIN_NAME/$domain_name/g templates/apache-symfony > /etc/apache2/sites-available/000-$domain_name.conf
 	rm /etc/apache2/sites-enabled/000-default.conf
@@ -324,17 +327,17 @@ function install_virtualhost() {
     say_done
 }
 
-# 25. Asegurar Kernel contra ataques de red
+# Asegurar Kernel contra ataques de red
 function kernel_config() {
-    write_title "25. Asegurar Kernel contra ataques de red (C) Jason Soto 2015"
+    write_title "Asegurar Kernel contra ataques de red (C) Jason Soto 2015"
     cp templates/sysctl /etc/sysctl.conf
     sysctl -e -p
     say_done
 }
 
-# 24. Instalar PortSentry
+# Instalar PortSentry
 function install_portsentry() {
-    write_title "24. Instalar y configurar el antiscan de puertos PortSentry"
+    write_title "Instalar y configurar el antiscan de puertos PortSentry"
     apt install portsentry -y
     mv /etc/portsentry/portsentry.conf /etc/portsentry/portsentry.conf-original
     cp templates/portsentry /etc/portsentry/portsentry.conf
@@ -344,9 +347,10 @@ function install_portsentry() {
     say_done
 }
 
-# 27. Reiniciar servidor
+# Reiniciar servidor
 function final_step() {
-    reboot   
+	write_title "Reiniciar Servidor"
+	reboot   
 }
 
 set_pause_on                   
