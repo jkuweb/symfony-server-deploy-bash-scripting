@@ -34,6 +34,15 @@ function set_hostname() {
 	say_done
 }
 
+function set_locale() {
+	write_title "Configurar locale"
+	export LANGUAJE=es_ES.UTF-8
+	export LANG=es_ES.UTF-8
+	export LC=es_ES.UTF-8
+	locale-gen es_ES.UTF-8
+	dpkg-reconfigure locales
+}
+
 
 # 2. Configurar zona horaria
 function set_hour() {
@@ -337,25 +346,15 @@ function install_portsentry() {
 
 # 27. Reiniciar servidor
 function final_step() {
-    write_title "27. Finalizar deploy"
-    replace USERNAME $username SERVERIP $serverip PUERTO $puerto < templates/texts/bye
-    echo -n " ¿Ha podido conectarse por SHH como $username? (y/n) "
-    read respuesta
-    if [ "$respuesta" == "y" ]; then
-        reboot
-    else
-        # instrucciones
-        echo "El servidor NO será reiniciado. Su conexión permanecerá abierta."
-        cat templates/texts/bug_ubuntu_ssh
-        echo "Para reiniciar el servidor escriba reboot y pulse <ENTER>"
-    fi
+    reboot   
 }
 
 set_pause_on                   
 
 is_root_user                    
 set_hostname                    
-set_hour                        
+set_hour
+set_locale                        
 sysupdate                       
 set_new_user                    
 give_instructions               
@@ -365,8 +364,7 @@ set_iptables_rules
 create_iptable_script           
 install_fail2ban                
 install_php                     
-install_common_libraries
-install_modsecurity             
+install_common_libraries             
 install_owasp_core_rule_set                    
 configure_apache				
 install_modevasive             
